@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic Tac Toe</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            background-image: url('unsplash.jpg');
+        }
+
+        h1 {
+            color: #333;
+            background-color: antiquewhite;
+            display:inline-block;
+            border-radius: 5px;
+            padding: 20x;
+            font-size: 50px;
+            margin-left: 235px;
+            margin-right: 233px;
+        }
+
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-gap: 10px;
+            max-width: 300px;
+            margin: 20px auto;
+            border-radius: 5px;
+        }
+
+        .board button {
+            width: 100%;
+            height: 100px;
+            font-size: 24px;
+            background-color: #eee;
+            border: 2px solid #ccc;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .board button:hover {
+            background-color: #ddd;
+        }
+
+        .board button:active {
+            transform: scale(0.95);
+        }
+
+        #pl {
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px 20px;
+            font-size: 18px;
+            border: none;
+            cursor: pointer;
+            margin-top: 20px;
+            border-radius: 5px;
+        }
+
+        #pl:hover {
+            background-color: #0056b3;
+        }
+        
+
+        
+    </style>
+</head>
+<script src="/socket.io/socket.io.js"></script>
+   <script>
+      var socket = io();
+      var me="";
+  socket.on("see", function (data) {//alert(data.zone);
+        for (var i = 1; i <= 9; i++) {
+      var j = document.getElementById(i).textContent;
+      document.getElementById(data.pos).textContent=data.who;
+      if (j != 'X' && j != 'O' && i!=data.pos) {
+        document.getElementById(i).disabled = false;
+      }
+    }
+  });
+socket.on("show",function(data){for(var i=1;i<=9;i++){
+            var fg=document.getElementById(i).disabled=true;}alert(data);})
+      function handleClick(buttonId) {
+        document.getElementById(buttonId).textContent=me;var zone=[];
+        var dekhi=true;
+        for(var i=1;i<=9;i++){
+            var fg=document.getElementById(i).textContent;
+            zone.push(fg);
+            if(fg!='X'&&fg!='O'){
+                dekhi=false;
+            }
+        }
+        if (
+    (zone[0] == zone[3] && zone[3] == zone[6]) ||
+    (zone[0] == zone[1] && zone[1] == zone[2]) ||
+    (zone[4] == zone[3] && zone[4] == zone[5]) ||
+    (zone[6] == zone[7] && zone[7] == zone[8]) ||
+    (zone[1] == zone[4] && zone[4] == zone[7]) ||
+    (zone[2] == zone[5] && zone[5] == zone[8]) ||
+    (zone[0] == zone[4] && zone[4] == zone[8]) ||
+    (zone[2] == zone[4] && zone[4] == zone[6])
+  ) {
+    socket.emit("result", me);
+  }
+  else if(dekhi){socket.emit("result","DRAW");}
+        
+        const buttons = document.querySelectorAll('button');
+            buttons.forEach(button => {
+                button.disabled = true;
+            });
+            //socket.emit("check",me);
+            socket.emit(me,buttonId);
+        }
+    function play(){
+        socket.emit('assignme', '');
+        socket.on('assignpl', function(data){me=data});
+        const buttons = document.querySelectorAll('button');
+            buttons.forEach(button => {
+                button.disabled = false;
+            });
+            document.getElementById("pl").disabled = true;
+    }
+   </script>
+   
+<body>
+    <h1>Tic Tac Toe</h1>
+    <button type="button" id="pl" name="button" onclick="play()">PLAY</button>
+    <div class="board">
+        <button class="box" id="1" onclick="handleClick(1)" disabled>1</button>
+        <button class="box" id="2" onclick="handleClick(2)" disabled>2</button>
+        <button class="box" id="3" onclick="handleClick(3)" disabled>3</button>
+        <button class="box" id="4" onclick="handleClick(4)" disabled>4</button>
+        <button class="box" id="5" onclick="handleClick(5)" disabled>5</button>
+        <button class="box" id="6" onclick="handleClick(6)" disabled>6</button>
+        <button class="box" id="7" onclick="handleClick(7)" disabled>7</button>
+        <button class="box" id="8" onclick="handleClick(8)" disabled>8</button>
+        <button class="box" id="9" onclick="handleClick(9)" disabled>9</button>
+    </div>
+</body>
+</html>
